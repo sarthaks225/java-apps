@@ -8,5 +8,5 @@ path of application>java memberutility    add     234023     Rohan     j2ee     
                                       operation   contact     name     course    fee
 
 
-operation can be performed in appllication:
+operations can be performed in appllication:
 {"add","update","getAll","getByCourse","getByContactNumber","getByName","remove"}
