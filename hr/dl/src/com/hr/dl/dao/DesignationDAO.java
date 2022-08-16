@@ -26,6 +26,9 @@ public void add(DesignationDTOInterface designationDTOInterface) throws DAOExcep
             while(lastGeneratedCodeString.length()<10)  
             {
                 lastGeneratedCodeString+=" ";
+            }
+            while(recordCountString.length()<10)  
+            {
                 recordCountString+=" ";
             }
 
@@ -67,6 +70,10 @@ public void add(DesignationDTOInterface designationDTOInterface) throws DAOExcep
     while(lastGeneratedCodeString.length()<10)
     {
         lastGeneratedCodeString+=" ";
+    }
+
+     while(recordCountString.length()<10)
+    {
         recordCountString+=" ";
     }
     randomAccessFile.writeBytes(lastGeneratedCodeString);
@@ -91,18 +98,223 @@ public void add(DesignationDTOInterface designationDTOInterface) throws DAOExcep
 
 
 }
-public void update(DesignationDTOInterface designationDTOInterface) throws DAOException
+public void update(DesignationDTOInterface designationDTO) throws DAOException
+{
+    if(designationDTO==null) throw new DAOException("Desigantion is null");
+    int code=designationDTO.getCode();
+    String title=designationDTO.getTitle().trim();
+    if(code<=0 || title.length()==0)  throw new DAOException("invalid Designation");
+
+    RandomAccessFile randomAccessFile=null;
+     RandomAccessFile tempRandomAccessFile=null;
+    try
+    {
+        File file=new File(fileName);
+        if(!file.exists()) throw new DAOException("Desgnation does not exist");
+        randomAccessFile=new RandomAccessFile(file,"rw");
+        if(randomAccessFile.length()==0) throw new DAOException("Designation does not exist");
+        randomAccessFile.readLine();
+        if(Integer.parseInt(randomAccessFile.readLine().trim())==0) throw new DAOException("Designation does not exist");
+
+        int fCode;
+        String fTitle;
+        boolean booleanCodeFound=false;
+        int filePointerPosition=0;
+        while(randomAccessFile.getFilePointer()<randomAccessFile.length())
+        {
+            fCode=Integer.parseInt(randomAccessFile.readLine().trim());
+          
+            if(fCode==code) 
+            {
+                booleanCodeFound=true;
+                filePointerPosition=(int)randomAccessFile.getFilePointer();
+            }
+            fTitle=randomAccessFile.readLine().trim();
+            if(fTitle.equalsIgnoreCase(title)) throw new DAOException("Title already exists");
+        }
+
+        if(booleanCodeFound==false) throw new DAOException("code does not exsist");
+
+        File tempFile=new File("temp.data");
+        if(tempFile.exists()) tempFile.delete();
+        tempRandomAccessFile=new RandomAccessFile(tempFile,"rw");
+
+        randomAccessFile.seek(filePointerPosition);
+        randomAccessFile.readLine();
+
+        tempRandomAccessFile.writeBytes(title);
+        tempRandomAccessFile.writeBytes("\n");
+        while(randomAccessFile.getFilePointer()<randomAccessFile.length())
+        {
+            tempRandomAccessFile.writeBytes(randomAccessFile.readLine());
+            tempRandomAccessFile.writeBytes("\n");
+        }
+
+        randomAccessFile.setLength(filePointerPosition);
+        randomAccessFile.seek(filePointerPosition);
+
+        tempRandomAccessFile.seek(0);
+        while(tempRandomAccessFile.length()>tempRandomAccessFile.getFilePointer())
+        {
+            randomAccessFile.writeBytes(tempRandomAccessFile.readLine());
+            randomAccessFile.writeBytes("\n");
+
+        }
+        randomAccessFile.close();
+        tempRandomAccessFile.close();
+    }catch(IOException ioe)
+    {
+        try
+        {
+            randomAccessFile.close();
+            tempRandomAccessFile.close();
+        }catch(IOException io)
+        {
+        }
+
+        throw new DAOException(ioe.getMessage());
+
+    }
+}
+public void delete(DesignationDTOInterface designationDTO) throws DAOException
 {
 
-}
-public DesignationDTOInterface delete(DesignationDTOInterface designationDTOInterface) throws DAOException
-{
-throw new DAOException("NOT Yet Implemented");
+    if(designationDTO==null) throw new DAOException("Desigantion is null");
+    int code=designationDTO.getCode();
+    String title=designationDTO.getTitle().trim();
+    if(code<=0 || title.length()==0)  throw new DAOException("invalid Designation");
+
+    RandomAccessFile randomAccessFile=null;
+    RandomAccessFile tempRandomAccessFile=null;
+    try
+    {
+        File file=new File(fileName);
+        if(!file.exists()) throw new DAOException("Desgnation does not exist");
+        randomAccessFile=new RandomAccessFile(file,"rw");
+        if(randomAccessFile.length()==0) throw new DAOException("Designation does not exist");
+        randomAccessFile.readLine();
+        int count=Integer.parseInt(randomAccessFile.readLine().trim());
+        if(count==0) throw new DAOException("Designation does not exist");
+
+        int fCode;
+        String fTitle;
+        boolean booleanCodeFound=false;
+        int filePointerPosition=0;
+        while(randomAccessFile.getFilePointer()<randomAccessFile.length())
+        {
+            
+            filePointerPosition=(int)randomAccessFile.getFilePointer();
+            fCode=Integer.parseInt(randomAccessFile.readLine().trim());
+            if(fCode==code) 
+            {
+                booleanCodeFound=true;
+                break;
+            }
+            randomAccessFile.readLine().trim();
+        }
+        
+        if(booleanCodeFound==false) throw new DAOException("code does not exsist");
+        fTitle=randomAccessFile.readLine().trim();
+        if(!fTitle.equalsIgnoreCase(title)) throw new DAOException("Designation does not exsist");
+
+        File tempFile=new File("temp.data");
+        if(tempFile.exists()) tempFile.delete();
+        tempRandomAccessFile=new RandomAccessFile(tempFile,"rw");
+
+        randomAccessFile.seek(filePointerPosition);
+        randomAccessFile.readLine();
+        randomAccessFile.readLine();
+
+        while(randomAccessFile.getFilePointer()<randomAccessFile.length())
+        {
+            tempRandomAccessFile.writeBytes(randomAccessFile.readLine());
+            tempRandomAccessFile.writeBytes("\n");
+            tempRandomAccessFile.writeBytes(randomAccessFile.readLine());
+            tempRandomAccessFile.writeBytes("\n");
+        }
+
+        randomAccessFile.setLength(filePointerPosition);
+        randomAccessFile.seek(filePointerPosition);
+
+        tempRandomAccessFile.seek(0);
+        while(tempRandomAccessFile.length()>tempRandomAccessFile.getFilePointer())
+        {
+            randomAccessFile.writeBytes(tempRandomAccessFile.readLine());
+            randomAccessFile.writeBytes("\n");
+
+        }
+
+        randomAccessFile.seek(0);
+        randomAccessFile.readLine();
+        String countStr=Integer.toString(--count);
+        while(countStr.length()<10) countStr+=" ";
+        randomAccessFile.writeBytes(countStr);
+        randomAccessFile.writeBytes("\n");
+
+        randomAccessFile.close();
+        tempRandomAccessFile.close();
+    }catch(IOException ioe)
+    {
+        try
+        {
+            randomAccessFile.close();
+            tempRandomAccessFile.close();
+        }catch(IOException io)
+        {
+        }
+
+        throw new DAOException(ioe.getMessage());
+
+    }
 }
 
-public TreeSet<DesignationDTOInterface> getAll() throws DAOException
+public Set<DesignationDTOInterface> getAll() throws DAOException
 {
-throw new DAOException("NOT Yet Implemented");
+    Set<DesignationDTOInterface> designations;
+    designations=new TreeSet<DesignationDTOInterface>();
+    RandomAccessFile randomAccessFile=null;
+
+    try
+    {
+        File file=new File(fileName);
+        if(!file.exists()) return designations;
+        randomAccessFile=new RandomAccessFile(file,"rw");
+        if(randomAccessFile.length()==0) return designations;
+
+        randomAccessFile.readLine();
+        int recordCount=Integer.parseInt(randomAccessFile.readLine().trim());
+        if(recordCount==0) return designations;
+        int fCode;
+        String fTitle;
+        DesignationDTO designation;
+        while(randomAccessFile.length()>randomAccessFile.getFilePointer())
+        {
+            fCode=Integer.parseInt(randomAccessFile.readLine().trim());
+            fTitle=randomAccessFile.readLine().trim();
+            designation=new DesignationDTO();
+            designation.setCode(fCode);
+            designation.setTitle(fTitle);
+            designations.add(designation);
+        }
+     
+        randomAccessFile.close();
+    }catch(IOException ioe)
+    {
+        if(randomAccessFile!=null)
+        {
+            try
+            {
+            randomAccessFile.close();
+            }catch(IOException io)
+            {}
+        }
+        
+        throw new DAOException(ioe.getMessage());
+    }
+
+
+
+   return designations;
 }
 
 public DesignationDTOInterface getByCode(int code) throws DAOException
@@ -151,11 +363,11 @@ public DesignationDTOInterface getByCode(int code) throws DAOException
         throw new DAOException("Code : ("+code+") not found");
     }catch(IOException ioe)
     {
-        System.out.println(ioe.getMessage());
+       throw new DAOException(ioe.getMessage());
 
     }
 
-    throw new DAOException("Code : ("+code+") not found");
+    
 
 
 
@@ -205,8 +417,8 @@ public DesignationDTOInterface getByTitle(String string) throws DAOException
     }catch(IOException ioe)
     {
 
-        System.out.println(ioe.getMessage());
-        throw new  DAOException("Designation : ("+string+") not found");
+        throw new DAOException(ioe.getMessage());
+        
     }
 
 }
@@ -251,11 +463,10 @@ public boolean codeExists(int code) throws DAOException
         return false;
     }catch(IOException ioe)
     {
-        System.out.println(ioe.getMessage());
+        throw new DAOException(ioe.getMessage());
 
     }
-
-    return false;
+    
 }
 
 public boolean titleExists(String string) throws DAOException
@@ -296,8 +507,7 @@ public boolean titleExists(String string) throws DAOException
     }catch(IOException ioe)
     {
 
-        System.out.println(ioe.getMessage());
-        return false;
+        throw new DAOException(ioe.getMessage());
     }
 
 
@@ -332,8 +542,7 @@ public int getCount() throws DAOException
         }catch(IOException iioe)
         {
         }
-        System.out.println(ioe.getMessage());
-        return 0;
+       throw new DAOException(ioe.getMessage());
     }
 }
 

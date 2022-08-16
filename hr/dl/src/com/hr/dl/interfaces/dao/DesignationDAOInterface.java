@@ -6,8 +6,8 @@ public interface DesignationDAOInterface
 {
 public void add(DesignationDTOInterface designationDTOInterface) throws DAOException;
 public void update(DesignationDTOInterface designationDTOInterface) throws DAOException;
-public DesignationDTOInterface delete(DesignationDTOInterface designationDTOInterface) throws DAOException;
-public TreeSet<DesignationDTOInterface> getAll() throws DAOException;
+public void delete(DesignationDTOInterface designationDTOInterface) throws DAOException;
+public Set<DesignationDTOInterface> getAll() throws DAOException;
 public DesignationDTOInterface getByCode(int code) throws DAOException;
 public DesignationDTOInterface getByTitle(String string) throws DAOException;
 public boolean codeExists(int code) throws DAOException;
