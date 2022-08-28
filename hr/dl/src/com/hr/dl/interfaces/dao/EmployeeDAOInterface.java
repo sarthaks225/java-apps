@@ -18,5 +18,5 @@ public boolean employeeIdExists(int employeeId) throws DAOException;
 public boolean panNumberExists(String panNumber) throws DAOException;
 public boolean aadharCardNumberExists(int aadharCardNumber) throws DAOException;
 public int getCount() throws DAOException;
-public int getCountByDesignation() throws DAOException;
+public int getCountByDesignation(int designationCode) throws DAOException;
 }

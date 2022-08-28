@@ -7,17 +7,17 @@ import com.hr.dl.dto.*;
 import java.util.*;
 import java.io.*;
 import java.math.*;
-class employeeGetAllTest
+class employeeGetByDesignationCode
 {
 public static void main(String gg[])
 {
+int designationCode=Integer.parseInt(gg[0].trim());
 SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy");
-
 Set<EmployeeDTOInterface> employees;
 EmployeeDAOInterface employeeDAO=new EmployeeDAO();
 try
 {
-employees=employeeDAO.getAll();
+employees=employeeDAO.getByDesignation(designationCode);
 
 for(EmployeeDTOInterface employeeDTO: employees)
 {
