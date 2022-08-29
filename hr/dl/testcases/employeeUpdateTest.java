@@ -1,4 +1,5 @@
 import java.text.*;
+import com.hr.common.enums.*;
 import com.hr.dl.exceptions.*;
 import com.hr.dl.interfaces.dao.*;
 import com.hr.dl.interfaces.dto.*;
@@ -36,7 +37,8 @@ employeeDTO.setEmployeeId(employeeId);
 employeeDTO.setName(name);
 employeeDTO.setDesignationCode(Integer.parseInt(designationCode));
 employeeDTO.setDateOfBirth(dateOfBirth); 
-employeeDTO.setGender(gender);
+if(gender=='m' || gender=='M') employeeDTO.setGender(GENDER.MALE);
+else employeeDTO.setGender(GENDER.FEMALE);
 employeeDTO.setIsIndian(isIndian);
 employeeDTO.setBasicSalary(basicSalary);
 employeeDTO.setPANNumber(panNumber);

@@ -1,4 +1,5 @@
 package com.hr.dl.dto;
+import com.hr.common.enums.*;
 import com.hr.dl.interfaces.dto.*;
 import java.util.*;
 import java.math.*;
@@ -60,9 +61,10 @@ public java.util.Date getDateOfBirth()
 {
 return this.dateOfBirth;
 }
-public void setGender(char gender)
+public void setGender(GENDER gender)
 {
-this.gender=gender;
+if(gender==GENDER.MALE) this.gender='M';
+else this.gender='F';
 }
 public char getGender()
 {

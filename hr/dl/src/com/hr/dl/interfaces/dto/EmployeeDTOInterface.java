@@ -1,4 +1,5 @@
 package com.hr.dl.interfaces.dto;
+import com.hr.common.enums.*;
 import java.util.*;
 import java.math.*;
 public interface EmployeeDTOInterface extends Comparable<EmployeeDTOInterface>,java.io.Serializable
@@ -11,7 +12,7 @@ public void setDesignationCode(int desigantionCode);
 public int getDesignationCode();
 public void setDateOfBirth(Date dateOfBirth);
 public Date getDateOfBirth();
-public void setGender(char gender);
+public void setGender(GENDER gender);
 public char getGender();
 public void setIsIndian(boolean isIndian);
 public boolean getIsIndian();

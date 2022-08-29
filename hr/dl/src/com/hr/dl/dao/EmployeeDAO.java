@@ -2,6 +2,7 @@ package com.hr.dl.dao;
 import com.hr.dl.exceptions.*;
 import com.hr.dl.interfaces.dao.*;
 import com.hr.dl.interfaces.dto.*;
+import com.hr.common.enums.GENDER;
 import com.hr.dl.dao.*;
 import com.hr.dl.dto.*;
 import java.text.*;
@@ -309,7 +310,9 @@ public Set<EmployeeDTOInterface> getAll() throws DAOException
             randomAccessFile.close();
             throw new DAOException("error: "+pe.getMessage());
         }
-        employeeDTO.setGender(randomAccessFile.readLine().charAt(0));
+        char gender=randomAccessFile.readLine().charAt(0);
+        if(gender=='M' || gender=='m') employeeDTO.setGender(GENDER.MALE);
+        else employeeDTO.setGender(GENDER.FEMALE);
         employeeDTO.setIsIndian(Boolean.parseBoolean(randomAccessFile.readLine()));
         employeeDTO.setBasicSalary(new BigDecimal(randomAccessFile.readLine()));
         employeeDTO.setPANNumber(randomAccessFile.readLine());
@@ -378,7 +381,9 @@ public Set<EmployeeDTOInterface> getByDesignation(int designationCode) throws DA
             throw new DAOException("error: "+pe.getMessage());
         }
 
-        employeeDTO.setGender(randomAccessFile.readLine().charAt(0));
+        char gender=randomAccessFile.readLine().charAt(0);
+        if(gender=='M' || gender=='m') employeeDTO.setGender(GENDER.MALE);
+        else employeeDTO.setGender(GENDER.FEMALE);
         employeeDTO.setIsIndian(Boolean.parseBoolean(randomAccessFile.readLine()));
         employeeDTO.setBasicSalary(new BigDecimal(randomAccessFile.readLine()));
         employeeDTO.setPANNumber(randomAccessFile.readLine());
