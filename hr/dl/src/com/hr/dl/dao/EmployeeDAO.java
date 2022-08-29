@@ -49,7 +49,7 @@ public void add(EmployeeDTOInterface employeeDTO) throws DAOException
             randomAccessFile.writeBytes(lastGeneratedEmployeeIdString+"\n");
             recordCountString=String.format("%-10s","1");
             randomAccessFile.writeBytes(recordCountString+"\n");
-            employeeId="A"+lastGeneratedEmployeeIdString;
+            employeeId="A"+"10000001";
             randomAccessFile.writeBytes(employeeId+"\n");
             randomAccessFile.writeBytes(name+"\n");
             randomAccessFile.writeBytes(designationCode+"\n");
@@ -438,7 +438,62 @@ public boolean isDesignationAlloted(int designationCode) throws DAOException
 
 public EmployeeDTOInterface getByEmployeeId(String employeeId) throws DAOException
 {
-throw new DAOException("Not yet implemented");
+    if(employeeId==null) throw new DAOException("error: invalid employee id");
+    employeeId=employeeId.trim();
+    if(employeeId.length()==0) throw new DAOException("error: employee id length is zero");
+
+    try
+    {
+        File file=new File(fileName);
+        if(file.exists()==false) throw new DAOException("error: not single employee added");
+        RandomAccessFile randomAccessFile=new RandomAccessFile(file,"rw");
+        if(randomAccessFile.length()==0) 
+        {
+            randomAccessFile.close();
+            throw new DAOException("error: not single employee added");
+        }
+        randomAccessFile.readLine();
+        if(Integer.parseInt(randomAccessFile.readLine().trim())==0)
+        {
+            randomAccessFile.close();
+            throw new DAOException("error: not single employee added");
+        }
+
+        EmployeeDTOInterface employeeDTO;
+        String fEmployeeId;
+        SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy");
+        while(randomAccessFile.length()>randomAccessFile.getFilePointer())
+        {
+            fEmployeeId=randomAccessFile.readLine().trim();
+            if(fEmployeeId.equalsIgnoreCase(employeeId))
+            {
+                employeeDTO=new EmployeeDTO();
+                employeeDTO.setEmployeeId(fEmployeeId);
+                employeeDTO.setName(randomAccessFile.readLine());
+                employeeDTO.setDesignationCode(Integer.parseInt(randomAccessFile.readLine().trim()));
+                employeeDTO.setDateOfBirth(sdf.parse(randomAccessFile.readLine()));
+                employeeDTO.setGender(randomAccessFile.readLine().charAt(0)=='M'?GENDER.MALE:GENDER.FEMALE);
+                employeeDTO.setIsIndian(Boolean.parseBoolean(randomAccessFile.readLine()));
+                employeeDTO.setBasicSalary(new BigDecimal(randomAccessFile.readLine().trim()));
+                employeeDTO.setPANNumber(randomAccessFile.readLine());
+                employeeDTO.setAadharCardNumber(randomAccessFile.readLine());
+                randomAccessFile.close();
+                return employeeDTO;
+            }
+            for(int x=0; x<8; ++x) randomAccessFile.readLine();
+        }
+
+
+        randomAccessFile.close();
+        throw new DAOException("error: invalid emoloyee id ("+employeeId+")");
+
+    }catch(IOException ioe)
+    {
+        throw new DAOException(ioe.getMessage());
+    }catch(ParseException pe)
+    {
+        throw new DAOException(pe.getMessage());
+    }
 }
 
 public EmployeeDTOInterface getByPANNumber(String panNumber) throws DAOException
@@ -451,19 +506,138 @@ public EmployeeDTOInterface getByAadharCardNumber(String aadharCardNumber) throw
 throw new DAOException("Not yet implemented");
 }
 
-public boolean employeeIdExists(int employeeId) throws DAOException
+public boolean employeeIdExists(String employeeId) throws DAOException
 {
-throw new DAOException("Not yet implemented");
+
+    if(employeeId==null) return false;
+    employeeId=employeeId.trim();
+    if(employeeId.length()==0) return false;
+    try
+    {
+        File file=new File(fileName);
+        if(file.exists()==false) return false;
+        RandomAccessFile randomAccessFile=new RandomAccessFile(file,"rw");
+        if(randomAccessFile.length()==0) 
+        {
+            randomAccessFile.close();
+            return false;
+        }
+        randomAccessFile.readLine();
+        if(Integer.parseInt(randomAccessFile.readLine().trim())==0)
+        {
+            randomAccessFile.close();
+            return false;
+        }
+
+        while(randomAccessFile.length()>randomAccessFile.getFilePointer())
+        {            
+            if(employeeId.equalsIgnoreCase(randomAccessFile.readLine().trim()))
+            {
+                randomAccessFile.close();
+                return true;
+            }
+            for(int x=0; x<8; ++x) randomAccessFile.readLine();
+        }
+
+        randomAccessFile.close();
+        return false;
+
+    }catch(IOException ioe)
+    {
+        throw new DAOException(ioe.getMessage());
+    }
+
 }
 
 public boolean panNumberExists(String panNumber) throws DAOException
 {
-throw new DAOException("Not yet implemented");
+
+    if(panNumber==null) return false;
+    panNumber=panNumber.trim();
+    if(panNumber.length()==0) return false;
+    try
+    {
+        File file=new File(fileName);
+        if(file.exists()==false) return false;
+        RandomAccessFile randomAccessFile=new RandomAccessFile(file,"rw");
+        if(randomAccessFile.length()==0) 
+        {
+            randomAccessFile.close();
+            return false;
+        }
+        randomAccessFile.readLine();
+        if(Integer.parseInt(randomAccessFile.readLine().trim())==0)
+        {
+            randomAccessFile.close();
+            return false;
+        }
+
+        while(randomAccessFile.length()>randomAccessFile.getFilePointer())
+        {            
+            for(int x=0; x<7; ++x) randomAccessFile.readLine();
+            if(panNumber.equalsIgnoreCase(randomAccessFile.readLine().trim()))
+            {
+                randomAccessFile.close();
+                return true;
+            }
+            randomAccessFile.readLine();
+        }
+
+        randomAccessFile.close();
+        return false;
+
+    }catch(IOException ioe)
+    {
+        throw new DAOException(ioe.getMessage());
+    }
+
+
+
+
 }
 
-public boolean aadharCardNumberExists(int aadharCardNumber) throws DAOException
+public boolean aadharCardNumberExists(String aadharCardNumber) throws DAOException
 {
-throw new DAOException("Not yet implemented");
+
+    
+    if(aadharCardNumber==null) return false;
+    aadharCardNumber=aadharCardNumber.trim();
+    if(aadharCardNumber.length()==0) return false;
+    try
+    {
+        File file=new File(fileName);
+        if(file.exists()==false) return false;
+        RandomAccessFile randomAccessFile=new RandomAccessFile(file,"rw");
+        if(randomAccessFile.length()==0) 
+        {
+            randomAccessFile.close();
+            return false;
+        }
+        randomAccessFile.readLine();
+        if(Integer.parseInt(randomAccessFile.readLine().trim())==0)
+        {
+            randomAccessFile.close();
+            return false;
+        }
+
+        while(randomAccessFile.length()>randomAccessFile.getFilePointer())
+        {            
+            for(int x=0; x<8; ++x) randomAccessFile.readLine();
+            if(aadharCardNumber.equalsIgnoreCase(randomAccessFile.readLine().trim()))
+            {
+                randomAccessFile.close();
+                return true;
+            }
+        }
+
+        randomAccessFile.close();
+        return false;
+
+    }catch(IOException ioe)
+    {
+        throw new DAOException(ioe.getMessage());
+    }
+
 }
 
 public int getCount() throws DAOException
