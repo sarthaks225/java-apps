@@ -27,6 +27,7 @@ public void add(EmployeeDTOInterface employeeDTO) throws DAOException
     Date dateOfBirth=employeeDTO.getDateOfBirth();
     if(dateOfBirth==null) throw new DAOException("error: Date is null");
     char gender=employeeDTO.getGender();
+    if(gender==' ') throw new DAOException("Gender not set Male/Female");
     boolean isIndian=employeeDTO.getIsIndian();
     BigDecimal basicSalary=employeeDTO.getBasicSalary();
     if(basicSalary.signum()==-1) throw new DAOException("error: salary can not be negative");
@@ -77,8 +78,8 @@ public void add(EmployeeDTOInterface employeeDTO) throws DAOException
                 for(x=0; x<7; ++x) randomAccessFile.readLine();
                 fPANNumber=randomAccessFile.readLine().trim();
                 fAadharCardNumber=randomAccessFile.readLine().trim();
-                if(fPANNumber.equalsIgnoreCase(panNumber)) boolPANNumberFound=true;
-                if(fAadharCardNumber.equalsIgnoreCase(aadharCardNumber)) boolAadharCardNumberFound=true;
+                if(boolPANNumberFound==false && fPANNumber.equalsIgnoreCase(panNumber)) boolPANNumberFound=true;
+                if(boolAadharCardNumberFound==false && fAadharCardNumber.equalsIgnoreCase(aadharCardNumber)) boolAadharCardNumberFound=true;
                 if(boolPANNumberFound && boolAadharCardNumberFound) break;
             }
             if(boolPANNumberFound && boolAadharCardNumberFound) 
@@ -93,7 +94,7 @@ public void add(EmployeeDTOInterface employeeDTO) throws DAOException
             }else if(boolAadharCardNumberFound)
             {
                 randomAccessFile.close();
-                throw new DAOException("can not add employee. Aadhar Card Number ("+aadharCardNumber+") already exists");
+                throw new DAOException("...1111.... can not add employee. Aadhar Card Number ("+aadharCardNumber+") already exists");
             }
             employeeId="A"+Integer.toString(lastGeneratedEmployeeId+1);
             randomAccessFile.writeBytes(employeeId+"\n");
@@ -140,12 +141,13 @@ public void update(EmployeeDTOInterface employeeDTO) throws DAOException
     Date dateOfBirth=employeeDTO.getDateOfBirth();
     if(dateOfBirth==null) throw new DAOException("error: Date is null");
     char gender=employeeDTO.getGender();
+    if(gender==' ') throw new DAOException("Gender is not set to Male/Female");
     boolean isIndian=employeeDTO.getIsIndian();
     BigDecimal basicSalary=employeeDTO.getBasicSalary();
     if(basicSalary.signum()==-1) throw new DAOException("error: salary can not be negative");
     String panNumber=employeeDTO.getPANNumber().trim();
     if(panNumber==null || panNumber.length()==0) throw new DAOException("error: PAN Number is null");
-    String aadharCardNumber=employeeDTO.getAadharCardNumber();
+    String aadharCardNumber=employeeDTO.getAadharCardNumber().trim();
     if(aadharCardNumber==null || aadharCardNumber.length()==0) throw new DAOException("error: Aadhar Card Number is invalid");
     try
     {
@@ -206,8 +208,8 @@ public void update(EmployeeDTOInterface employeeDTO) throws DAOException
                 for(x=0; x<6; ++x) randomAccessFile.readLine();
                 fPANNumber=randomAccessFile.readLine().trim();
                 fAadharCardNumber=randomAccessFile.readLine().trim();
-                if(fPANNumber.equalsIgnoreCase(panNumber)) boolPANNumberFound=true;
-                if(fAadharCardNumber.equalsIgnoreCase(aadharCardNumber)) boolAadharCardNumberFound=true;
+                if(boolPANNumberFound==false && fPANNumber.equalsIgnoreCase(panNumber)) boolPANNumberFound=true;
+                if(boolAadharCardNumberFound==false && fAadharCardNumber.equalsIgnoreCase(aadharCardNumber)) boolAadharCardNumberFound=true;
                 if(boolPANNumberFound && boolAadharCardNumberFound) break;
             }
             
@@ -255,6 +257,7 @@ public void update(EmployeeDTOInterface employeeDTO) throws DAOException
             {
                 randomAccessFile.writeBytes(tmpRandomAccessFile.readLine()+"\n");
             }
+            if(tmpFile.exists()) tmpFile.delete();
             tmpFile.delete();
             tmpRandomAccessFile.close();
         }
@@ -270,9 +273,82 @@ public void update(EmployeeDTOInterface employeeDTO) throws DAOException
 }
 
 
-public void delete(EmployeeDTOInterface employeeDTOInterface) throws DAOException
+public void delete(String employeeId) throws DAOException
 {
-throw new DAOException("Not yet implemented");
+    if(employeeId==null) throw new DAOException("error: employee Id is null");
+
+    employeeId=employeeId.trim();
+    if(employeeId.length()==0) throw new DAOException("error: invalid employee ID can not delete");
+    try
+    {
+        int recordCount=0;
+        File file=new File(fileName);
+        RandomAccessFile randomAccessFile=new RandomAccessFile(file,"rw");
+        if(randomAccessFile.length()==0)
+        {
+            randomAccessFile.close();
+            throw new DAOException("errror : can not delete employee Id ("+employeeId+")");
+        }
+        else
+        {
+            randomAccessFile.readLine();
+
+            recordCount=Integer.parseInt(randomAccessFile.readLine().trim());
+            long updatePointerPosition=0;
+            Boolean boolEmployeeIdFound=false;
+            String fEmployeeId;
+            int x;
+            while(randomAccessFile.length()>randomAccessFile.getFilePointer())
+            {
+                    updatePointerPosition=randomAccessFile.getFilePointer();
+                    fEmployeeId=randomAccessFile.readLine().trim();
+                    if(employeeId.equalsIgnoreCase(fEmployeeId))
+                    {    
+                        boolEmployeeIdFound=true;
+                        break;
+                    }
+                for(x=0; x<8; ++x) randomAccessFile.readLine();
+            }
+            
+            if(boolEmployeeIdFound==false) throw new DAOException("error: employee Id not found: ("+employeeId+")");
+
+            File tmpFile=new File("tmpEmployee.data");   //copying to tmpEmployee.data
+            if(tmpFile.exists()) tmpFile.delete();
+            RandomAccessFile tmpRandomAccessFile=new RandomAccessFile(tmpFile,"rw");
+    
+            randomAccessFile.seek(updatePointerPosition);
+            for(x=0; x<9; ++x) randomAccessFile.readLine();
+            while(randomAccessFile.getFilePointer()<randomAccessFile.length())
+            {
+                tmpRandomAccessFile.writeBytes(randomAccessFile.readLine()+"\n");
+
+            }
+
+            randomAccessFile.setLength(updatePointerPosition);  // updation in original file
+            randomAccessFile.seek(updatePointerPosition);
+            tmpRandomAccessFile.seek(0);
+            while(tmpRandomAccessFile.length()>tmpRandomAccessFile.getFilePointer())
+            {
+                randomAccessFile.writeBytes(tmpRandomAccessFile.readLine()+"\n");
+            }
+            randomAccessFile.seek(0);
+            randomAccessFile.readLine();
+            randomAccessFile.writeBytes(String.format("%-10s",Integer.toString(recordCount-=1))+"\n");
+            tmpFile.delete();
+            tmpRandomAccessFile.close();
+        }
+        
+        randomAccessFile.close();
+      
+    }catch(IOException ioe)
+    {
+
+        throw new DAOException(ioe.getMessage());
+
+    }
+
+
+
 }
 
 public Set<EmployeeDTOInterface> getAll() throws DAOException

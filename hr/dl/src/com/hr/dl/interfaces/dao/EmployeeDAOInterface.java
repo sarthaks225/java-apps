@@ -7,7 +7,7 @@ public interface EmployeeDAOInterface
 {
 public void add(EmployeeDTOInterface employeeDTOInterface) throws DAOException;
 public void update(EmployeeDTOInterface employeeDTOInterface) throws DAOException;
-public void delete(EmployeeDTOInterface employeeDTOInterface) throws DAOException;
+public void delete(String enployeeId) throws DAOException;
 public Set<EmployeeDTOInterface> getAll() throws DAOException;
 public Set<EmployeeDTOInterface> getByDesignation(int designationCode) throws DAOException;
 public boolean isDesignationAlloted(int designationCode) throws DAOException;
