@@ -176,13 +176,10 @@ public void update(DesignationDTOInterface designationDTO) throws DAOException
 
     }
 }
-public void delete(DesignationDTOInterface designationDTO) throws DAOException
+public void delete(int code) throws DAOException
 {
 
-    if(designationDTO==null) throw new DAOException("Desigantion is null");
-    int code=designationDTO.getCode();
-    String title=designationDTO.getTitle().trim();
-    if(code<=0 || title.length()==0)  throw new DAOException("invalid Designation");
+    if(code<=0)  throw new DAOException("invalid Designation code: "+code);
 
     RandomAccessFile randomAccessFile=null;
     RandomAccessFile tempRandomAccessFile=null;
@@ -192,12 +189,12 @@ public void delete(DesignationDTOInterface designationDTO) throws DAOException
         if(!file.exists()) throw new DAOException("Desgnation does not exist");
         randomAccessFile=new RandomAccessFile(file,"rw");
         if(randomAccessFile.length()==0) throw new DAOException("Designation does not exist");
-        randomAccessFile.readLine();
+        int lastGeneratedCode=Integer.parseInt(randomAccessFile.readLine().trim());
+        if(lastGeneratedCode<code) throw new DAOException("invalid Designation code: "+code);
         int count=Integer.parseInt(randomAccessFile.readLine().trim());
         if(count==0) throw new DAOException("Designation does not exist");
 
         int fCode;
-        String fTitle;
         boolean booleanCodeFound=false;
         int filePointerPosition=0;
         while(randomAccessFile.getFilePointer()<randomAccessFile.length())
@@ -213,9 +210,8 @@ public void delete(DesignationDTOInterface designationDTO) throws DAOException
             randomAccessFile.readLine().trim();
         }
         
-        if(booleanCodeFound==false) throw new DAOException("code does not exsist");
-        fTitle=randomAccessFile.readLine().trim();
-        if(!fTitle.equalsIgnoreCase(title)) throw new DAOException("Designation does not exsist");
+        if(booleanCodeFound==false) throw new DAOException("code ("+code+") does not exsist");
+        randomAccessFile.readLine().trim();
 
         File tempFile=new File("temp.data");
         if(tempFile.exists()) tempFile.delete();
