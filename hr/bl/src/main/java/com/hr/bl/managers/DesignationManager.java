@@ -73,11 +73,11 @@ public void add(DesignationInterface designation) throws BLException
         throw blException;
     }
     int code=designation.getCode();
-    String title=designation.getTitle().trim().toUpperCase();
-    if(code!=0) blException.addException("code","code should be zero" );;
+    String title=designation.getTitle();
+    if(code!=0) blException.addException("code","code should be zero" );
     if(title==null) blException.addException("title","designation should not be empty");
     else if(title.length()==0) blException.addException("title","designation should not be empty");
-    else if(titleWiseDesignationsMap.containsKey(title)) blException.addException("title","designation ("+title+") already exists");
+    else if(titleWiseDesignationsMap.containsKey(title.toUpperCase())) blException.addException("title","designation ("+title+") already exists");
     if(blException.hasExceptions()) throw blException;
 
     try
@@ -92,9 +92,9 @@ public void add(DesignationInterface designation) throws BLException
         blDesignation.setCode(code);
         blDesignation.setTitle(title);
 
-        titleWiseDesignationsMap.put(title,blDesignation);
+        titleWiseDesignationsMap.put(title.toUpperCase(),blDesignation);
         codeWiseDesignationsMap.put(code,blDesignation);
-        designationsSet.add(designation);
+        designationsSet.add(blDesignation);
     }catch(DAOException daoe)
     {
         blException.setGenericException(daoe.getMessage());
@@ -105,15 +105,96 @@ public void add(DesignationInterface designation) throws BLException
 public void update(DesignationInterface designation) throws BLException
 {
     BLException blException=new BLException();
-    blException.setGenericException("Not Yet Implemented");
-    throw blException;
+    if(designation==null) 
+    {
+        blException.setGenericException("designation required");
+        throw blException;
+    }
+    int code=designation.getCode();
+    if(code<=0) 
+    {
+        blException.addException("code","code ("+code+") should be greater then zero" );
+        throw blException;
+    }
+    if(codeWiseDesignationsMap.containsKey(code)==false)
+    {
+        blException.addException("code", "code ("+code+") not exists, can not upadate");
+        throw blException;
+    }
+    String title=designation.getTitle();
+    DesignationInterface blDesignation;
+
+    if(title==null) blException.addException("title","designation should not be empty");
+    else if(title.length()==0) blException.addException("title","designation should not be empty");
+    else
+    {
+        blDesignation=titleWiseDesignationsMap.get(title.toUpperCase());
+        if(blDesignation!=null && blDesignation.getCode()!=code) blException.addException("title","designation ("+title+") already exists");
+        else if(blDesignation!=null && blDesignation.getCode()==code) return;
+    }
+    if(blException.hasExceptions()) throw blException;
+
+    try
+    {
+        DesignationDTOInterface designationDTO=new DesignationDTO();
+        designationDTO.setTitle(title);
+        designationDTO.setCode(code);
+        DesignationDAOInterface designationDAO=new DesignationDAO();
+        designationDAO.update(designationDTO);
+        blDesignation=new Designation();
+        blDesignation.setCode(code);
+        blDesignation.setTitle(title);
+
+         // removing old key (DesignationTitle) from DS 
+        titleWiseDesignationsMap.remove(codeWiseDesignationsMap.get(code).getTitle().toUpperCase());
+        designationsSet.remove(codeWiseDesignationsMap.get(code));
+
+        //update DS
+        titleWiseDesignationsMap.put(title.toUpperCase(),blDesignation);
+        codeWiseDesignationsMap.put(code,blDesignation);
+        designationsSet.add(blDesignation);
+    }catch(DAOException daoe)
+    {
+        blException.setGenericException(daoe.getMessage());
+        throw blException;
+    }
 
 }
-public void remove(DesignationInterface designation) throws BLException
+public void remove(int code) throws BLException
 {
+    
     BLException blException=new BLException();
-    blException.setGenericException("Not Yet Implemented");
-    throw blException;
+    
+    if(code<=0) 
+    {
+        blException.addException("code","code ("+code+") should be greater then zero" );
+        throw blException;
+    }
+    if(codeWiseDesignationsMap.containsKey(code)==false)
+    {
+        blException.addException("code", "code ("+code+") not exists, can not upadate");
+        throw blException;
+    }
+
+    try
+    {
+        DesignationInterface designation=codeWiseDesignationsMap.get(code);
+        DesignationDTOInterface designationDTO=new DesignationDTO();
+        DesignationDAOInterface designationDAO=new DesignationDAO();
+        designationDAO.delete(code);
+        
+        // removing old key (DesignationTitle) from DS 
+        titleWiseDesignationsMap.remove(designation.getTitle().toUpperCase());
+        codeWiseDesignationsMap.remove(code);
+        designationsSet.remove(designation);
+
+    }catch(DAOException daoe)
+    {
+        blException.setGenericException(daoe.getMessage());
+        throw blException;
+    }
+
+
 
 }
 public DesignationInterface getDesignationByCode(int code)  throws BLException

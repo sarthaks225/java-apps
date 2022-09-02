@@ -10,7 +10,7 @@ public interface DesignationManagerInterface
 {
 public void add(DesignationInterface designation) throws BLException;
 public void update(DesignationInterface designation) throws BLException;
-public void remove(DesignationInterface designation) throws BLException;
+public void remove(int code) throws BLException;
 public DesignationInterface getDesignationByCode(int code) throws BLException;
 public DesignationInterface getDesignationByTitle(String title) throws BLException;
 public Set<DesignationInterface> getDesignations() throws BLException;
