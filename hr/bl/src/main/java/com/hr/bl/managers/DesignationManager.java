@@ -200,47 +200,72 @@ public void remove(int code) throws BLException
 public DesignationInterface getDesignationByCode(int code)  throws BLException
 {
     BLException blException=new BLException();
-    blException.setGenericException("Not Yet Implemented");
-    throw blException;
+    if(code<=0) blException.addException("code", "code ("+code+")should be greater then zero");
+    if(codeWiseDesignationsMap.containsKey(code)==false) blException.addException("code","code ("+code+") not exists");
+    if(blException.hasExceptions()) throw blException;
+    DesignationInterface dsDesignation;
+    dsDesignation=codeWiseDesignationsMap.get(code);
+    DesignationInterface designation=new Designation();
+    designation.setCode(code);
+    designation.setTitle(dsDesignation.getTitle());
+    return designation;
 }
 
 public DesignationInterface getDesignationByTitle(String title)  throws BLException
 {
     BLException blException=new BLException();
-    blException.setGenericException("Not Yet Implemented");
-    throw blException;
+    if(title==null) blException.addException("title", "Designation title can not be empty");
+    if(title.trim().length()==0) blException.addException("title", "Designation title can not be empty");
+    if(titleWiseDesignationsMap.containsKey(title.toUpperCase())==false) blException.addException("title","title ("+title+") not exists");
+    if(blException.hasExceptions()) throw blException;
+    DesignationInterface dsDesignation;
+    dsDesignation=titleWiseDesignationsMap.get(title.toUpperCase());
+
+    DesignationInterface designation=new Designation();
+    designation.setCode(dsDesignation.getCode());
+    designation.setTitle(dsDesignation.getTitle());
+    return designation;
 }
 
 public Set<DesignationInterface> getDesignations()  throws BLException
 {
-    BLException blException=new BLException();
-    blException.setGenericException("Not Yet Implemented");
-    throw blException;
+   Set<DesignationInterface> designations=new TreeSet<>();
 
+   designationsSet.forEach((designation)->{
+    DesignationInterface d=new Designation();
+    d.setCode(designation.getCode());
+    d.setTitle(designation.getTitle());
+    designations.add(d);
+   });
+
+   return designations;
 }
 
 public int getDesignationCount() throws BLException
 {
-    BLException blException=new BLException();
-    blException.setGenericException("Not Yet Implemented");
-    throw blException;
-
+    return codeWiseDesignationsMap.size();
 }
 
 public boolean designationCodeExists(int code) throws BLException
 {
     BLException blException=new BLException();
-    blException.setGenericException("Not Yet Implemented");
-    throw blException;
+    if(code<=0) 
+    {
+        blException.addException("code", "code ("+code+")should be greater then zero");
+        throw blException;
+    }
 
+    return codeWiseDesignationsMap.containsKey(code);
 }
 
 public boolean designationTitleExists(String title)  throws BLException
 {
     BLException blException=new BLException();
-    blException.setGenericException("Not Yet Implemented");
-    throw blException;
+    if(title==null) blException.addException("title", "Designation title can not be empty");
+    if(title.trim().length()==0) blException.addException("title", "Designation title can not be empty");
+    if(blException.hasExceptions()) throw blException;
 
+    return titleWiseDesignationsMap.containsKey(title.toUpperCase());
 }
 
 };
