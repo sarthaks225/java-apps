@@ -211,6 +211,11 @@ public DesignationInterface getDesignationByCode(int code)  throws BLException
     return designation;
 }
 
+DesignationInterface getDSDesignationByCode(int code) // method used to get original Designation for the usage in same package
+{
+    return this.codeWiseDesignationsMap.get(code);
+}
+
 public DesignationInterface getDesignationByTitle(String title)  throws BLException
 {
     BLException blException=new BLException();
