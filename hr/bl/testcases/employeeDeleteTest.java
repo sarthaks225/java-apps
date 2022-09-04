@@ -5,33 +5,26 @@ import com.hr.bl.managers.*;
 import com.hr.bl.exceptions.*;
 import com.hr.bl.interfaces.pojo.*;
 
-/*
-import com.hr.dl.exceptions.*;
-import com.hr.dl.interfaces.dto.*;
-import com.hr.dl.interfaces.dao.*;
-import com.hr.dl.dao.*;
-import com.hr.dl.dto.*;
-*/
-
 import java.util.*;
 import java.math.*;
 import com.hr.common.enums.*;
 import java.text.*;
-class employeeAddTest
+class employeeDeleteTest
 {
 public static void main(String gg[])
 {
-/*
-String name=gg[0];
-int designationCode=Integer.parseInt(gg[1].trim());
-String dateOfBirth=gg[2];
-char gender=gg[3].charAt(0);
-boolean isIndian=Boolean.parseBoolean(gg[4]);
-BigDecimal basicSalary=new BigDecimal(gg[5].trim());
-String panNumber=gg[6];
-String aadharCardNumber=gg[7];
-*/
 
+
+try
+{
+EmployeeManagerInterface employeeManager=EmployeeManager.getEmployeeManager();
+employeeManager.delete("A10000003");
+
+System.out.println("employee deleted");
+
+//...........................now adding
+/*
+System.out.println("adding ");
 String name="kanak";
 DesignationInterface designation=new Designation();
 designation.setCode(9);
@@ -70,7 +63,7 @@ employee.setBasicSalary(basicSalary);
 employee.setPANNumber(panNumber);
 employee.setAadharCardNumber(aadharCardNumber);
 
-EmployeeManagerInterface employeeManager=EmployeeManager.getEmployeeManager();
+
 
 employeeManager.add(employee);
 
@@ -92,6 +85,24 @@ System.out.println(ble.getException(property));
 catch(ParseException pe)
 {
 System.out.println(pe.getMessage());
+}
+
+*/
+}
+
+
+
+catch(BLException ble)
+{
+if(ble.hasGenericException()) System.out.println("genric exception: "+ble.getGenericException());
+
+System.out.println("property exception		");
+List<String> properties=ble.getPropertyExceptions();
+for(String property: properties)
+{
+System.out.println(ble.getException(property));
+}
+
 }
 
 

@@ -265,7 +265,7 @@ public class EmployeeManager implements EmployeeManagerInterface
                 //data layer work done
 
                 //removing old employee from data structure
-            dsEmployee=employeeIdWiseEmployeesMap.get(employee.getEmployeeId().toUpperCase);
+            dsEmployee=employeeIdWiseEmployeesMap.get(employee.getEmployeeId().toUpperCase());
             this.employeesSet.remove(dsEmployee);
             this.employeeIdWiseEmployeesMap.remove(dsEmployee.getEmployeeId().toUpperCase());
             this.employeePANNumberWiseEmployeesMap.remove(dsEmployee.getPANNumber().toUpperCase());
@@ -302,11 +302,37 @@ public class EmployeeManager implements EmployeeManagerInterface
             throw blException;
         }
    	}
-    public void delete(String enployeeId) throws BLException
+    public void delete(String employeeId) throws BLException
     {
         BLException blException=new BLException();
-        blException.setGenericException("Yet to implement");
-		throw blException;
+        if(employeeId==null || employeeId.trim().length()==0)
+        {
+            blException.addException("employeeId","employee id should not be empty");
+        }
+        if(this.employeeIdWiseEmployeesMap.containsKey(employeeId.toUpperCase())==false)
+        {
+            blException.addException("employeeId","employee id ("+employeeId+") not exists");
+            throw blException;
+        }
+
+        try
+        {
+            EmployeeDAOInterface employeeDAO=new EmployeeDAO();
+            employeeDAO.delete(employeeId);
+
+            EmployeeInterface employee=this.employeeIdWiseEmployeesMap.get(employeeId.toUpperCase());
+            this.employeeIdWiseEmployeesMap.remove(employee.getEmployeeId().toUpperCase());
+            this.employeePANNumberWiseEmployeesMap.remove(employee.getPANNumber().toUpperCase());
+            this.employeeAadharCardNumberWiseEmployeesMap.remove(employee.getAadharCardNumber().toUpperCase());
+            this.employeesSet.remove(employee);
+        }
+        catch(DAOException daoe)
+        {
+            blException.setGenericException(daoe.getMessage());
+            throw blException;
+        }
+
+
    	}
     public Set<EmployeeInterface> getAll() throws BLException
     {
