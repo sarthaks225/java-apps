@@ -334,11 +334,30 @@ public class EmployeeManager implements EmployeeManagerInterface
 
 
    	}
-    public Set<EmployeeInterface> getAll() throws BLException
+    public Set<EmployeeInterface> getAll()
     {
-        BLException blException=new BLException();
-        blException.setGenericException("Yet to implement");
-		throw blException;
+        Set<EmployeeInterface> employees=new TreeSet<>();
+        EmployeeInterface employee;
+        DesignationInterface designation;
+        for(EmployeeInterface dsEmployee: this.employeesSet)
+        {
+            employee=new Employee();
+            employee.setEmployeeId(dsEmployee.getEmployeeId());
+            employee.setName(dsEmployee.getName());
+            designation=new Designation();
+            designation.setCode(dsEmployee.getDesignation().getCode());
+            designation.setTitle(dsEmployee.getDesignation().getTitle());
+            employee.setDesignation(designation);
+            employee.setDateOfBirth(dsEmployee.getDateOfBirth());
+            employee.setGender(dsEmployee.getGender()=='M' || dsEmployee.getGender()=='m'?GENDER.MALE:GENDER.FEMALE);
+            employee.setBasicSalary(dsEmployee.getBasicSalary());
+            employee.setIsIndian(dsEmployee.getIsIndian());
+            employee.setPANNumber(dsEmployee.getPANNumber());
+            employee.setAadharCardNumber(dsEmployee.getAadharCardNumber());
+            
+            employees.add(employee);
+        }
+        return employees;
    	}
     public Set<EmployeeInterface> getByDesignation(int designationCode) throws BLException
     {
@@ -354,45 +373,104 @@ public class EmployeeManager implements EmployeeManagerInterface
    	}
     public EmployeeInterface getByEmployeeId(String employeeId) throws BLException
     {
-        BLException blException=new BLException();
-        blException.setGenericException("Yet to implement");
-		throw blException;
+        EmployeeInterface dsEmployee=this.employeeIdWiseEmployeesMap.get(employeeId.toUpperCase());
+        if(dsEmployee==null)
+        {
+            BLException blException=new BLException();
+            blException.setGenericException("employee Id ("+employeeId+") not found");
+            throw blException;
+        }
+
+        EmployeeInterface employee=new Employee();
+
+        employee.setEmployeeId(dsEmployee.getEmployeeId());
+        employee.setName(dsEmployee.getName());
+        DesignationInterface designation=new Designation();
+        designation.setCode(dsEmployee.getDesignation().getCode());
+        designation.setTitle(dsEmployee.getDesignation().getTitle());
+        employee.setDesignation(designation);
+        employee.setDateOfBirth(dsEmployee.getDateOfBirth());
+        employee.setGender(dsEmployee.getGender()=='M' || dsEmployee.getGender()=='m'?GENDER.MALE:GENDER.FEMALE);
+        employee.setBasicSalary(dsEmployee.getBasicSalary());
+        employee.setIsIndian(dsEmployee.getIsIndian());
+        employee.setPANNumber(dsEmployee.getPANNumber());
+        employee.setAadharCardNumber(dsEmployee.getAadharCardNumber());
+        
+        return employee;
+
    	}
     public EmployeeInterface getByPANNumber(String panNumber) throws BLException
     {
-        BLException blException=new BLException();
-        blException.setGenericException("Yet to implement");
-		throw blException;
+        EmployeeInterface dsEmployee=this.employeePANNumberWiseEmployeesMap.get(panNumber.toUpperCase());
+        if(dsEmployee==null)
+        {
+            BLException blException=new BLException();
+            blException.setGenericException("pan number ("+panNumber+") not found");
+            throw blException;
+        }
+
+        EmployeeInterface employee=new Employee();
+
+        employee.setEmployeeId(dsEmployee.getEmployeeId());
+        employee.setName(dsEmployee.getName());
+        DesignationInterface designation=new Designation();
+        designation.setCode(dsEmployee.getDesignation().getCode());
+        designation.setTitle(dsEmployee.getDesignation().getTitle());
+        employee.setDesignation(designation);
+        employee.setDateOfBirth(dsEmployee.getDateOfBirth());
+        employee.setGender(dsEmployee.getGender()=='M' || dsEmployee.getGender()=='m'?GENDER.MALE:GENDER.FEMALE);
+        employee.setBasicSalary(dsEmployee.getBasicSalary());
+        employee.setIsIndian(dsEmployee.getIsIndian());
+        employee.setPANNumber(dsEmployee.getPANNumber());
+        employee.setAadharCardNumber(dsEmployee.getAadharCardNumber());
+        
+        return employee;
    	}
     public EmployeeInterface getByAadharCardNumber(String aadharCardNumber) throws BLException
     {
-        BLException blException=new BLException();
-        blException.setGenericException("Yet to implement");
-		throw blException;
+        
+        EmployeeInterface dsEmployee=this.employeeAadharCardNumberWiseEmployeesMap.get(aadharCardNumber.toUpperCase());
+        if(dsEmployee==null)
+        {
+            BLException blException=new BLException();
+            blException.setGenericException("aadhar card number ("+aadharCardNumber+") not found");
+            throw blException;
+        }
+
+        EmployeeInterface employee=new Employee();
+
+        employee.setEmployeeId(dsEmployee.getEmployeeId());
+        employee.setName(dsEmployee.getName());
+        DesignationInterface designation=new Designation();
+        designation.setCode(dsEmployee.getDesignation().getCode());
+        designation.setTitle(dsEmployee.getDesignation().getTitle());
+        employee.setDesignation(designation);
+        employee.setDateOfBirth(dsEmployee.getDateOfBirth());
+        employee.setGender(dsEmployee.getGender()=='M' || dsEmployee.getGender()=='m'?GENDER.MALE:GENDER.FEMALE);
+        employee.setBasicSalary(dsEmployee.getBasicSalary());
+        employee.setIsIndian(dsEmployee.getIsIndian());
+        employee.setPANNumber(dsEmployee.getPANNumber());
+        employee.setAadharCardNumber(dsEmployee.getAadharCardNumber());
+        
+        return employee;
+
+
    	}
-    public boolean employeeIdExists(String employeeId) throws BLException
+    public boolean employeeIdExists(String employeeId) 
     {
-        BLException blException=new BLException();
-        blException.setGenericException("Yet to implement");
-		throw blException;
+        return this.employeeIdWiseEmployeesMap.containsKey(employeeId.toUpperCase());
    	}
-    public boolean panNumberExists(String panNumber) throws BLException
+    public boolean panNumberExists(String panNumber)
     {
-        BLException blException=new BLException();
-        blException.setGenericException("Yet to implement");
-		throw blException;
+        return this.employeePANNumberWiseEmployeesMap.containsKey(panNumber.toUpperCase());
    	}
-    public boolean aadharCardNumberExists(String aadharCardNumber) throws BLException
+    public boolean aadharCardNumberExists(String aadharCardNumber)
     {
-        BLException blException=new BLException();
-        blException.setGenericException("Yet to implement");
-		throw blException;
+        return this.employeeAadharCardNumberWiseEmployeesMap.containsKey(aadharCardNumber.toUpperCase());
    	}
-    public int getCount() throws BLException
+    public int getCount()
     {
-        BLException blException=new BLException();
-        blException.setGenericException("Yet to implement");
-		throw blException;
+        return this.employeeIdWiseEmployeesMap.size();
    	}
     public int getCountByDesignation(int designationCode) throws BLException
     {
