@@ -133,7 +133,7 @@ public class EmployeeManager implements EmployeeManagerInterface
             EmployeeDTOInterface employeeDTO=new EmployeeDTO();
             employeeDTO.setName(employee.getName());
             employeeDTO.setDesignationCode(employee.getDesignation().getCode());
-            employeeDTO.setDateOfBirth(employee.getDateOfBirth());
+            employeeDTO.setDateOfBirth((Date)employee.getDateOfBirth().clone());
             employeeDTO.setGender(employee.getGender()=='m' || employee.getGender()=='M'?GENDER.MALE:GENDER.FEMALE);
             employeeDTO.setIsIndian(employee.getIsIndian());
             employeeDTO.setBasicSalary(employee.getBasicSalary());
@@ -153,7 +153,7 @@ public class EmployeeManager implements EmployeeManagerInterface
             DesignationManagerInterface designationManager=DesignationManager.getDesignationManager(); // original Designation object from DesignationManager
             dsEmployee.setDesignation(((DesignationManager) designationManager).getDSDesignationByCode(employee.getDesignation().getCode()));
 
-            dsEmployee.setDateOfBirth(employee.getDateOfBirth());
+            dsEmployee.setDateOfBirth((Date)employee.getDateOfBirth().clone());
             dsEmployee.setGender(employee.getGender()=='m' || employee.getGender()=='M'?GENDER.MALE:GENDER.FEMALE);
             dsEmployee.setIsIndian(employee.getIsIndian());
             dsEmployee.setBasicSalary(employee.getBasicSalary());
@@ -253,7 +253,7 @@ public class EmployeeManager implements EmployeeManagerInterface
             employeeDTO.setEmployeeId(employee.getEmployeeId());
             employeeDTO.setName(employee.getName());
             employeeDTO.setDesignationCode(employee.getDesignation().getCode());
-            employeeDTO.setDateOfBirth(employee.getDateOfBirth());
+            employeeDTO.setDateOfBirth((Date)employee.getDateOfBirth().clone());
             employeeDTO.setGender(employee.getGender()=='m' || employee.getGender()=='M'?GENDER.MALE:GENDER.FEMALE);
             employeeDTO.setIsIndian(employee.getIsIndian());
             employeeDTO.setBasicSalary(employee.getBasicSalary());
@@ -279,7 +279,7 @@ public class EmployeeManager implements EmployeeManagerInterface
             designationManager=DesignationManager.getDesignationManager(); // original Designation object from DesignationManager
             dsEmployee.setDesignation(((DesignationManager) designationManager).getDSDesignationByCode(employee.getDesignation().getCode()));
 
-            dsEmployee.setDateOfBirth(employee.getDateOfBirth());
+            dsEmployee.setDateOfBirth((Date)employee.getDateOfBirth().clone());
             dsEmployee.setGender(employee.getGender()=='m' || employee.getGender()=='M'?GENDER.MALE:GENDER.FEMALE);
             dsEmployee.setIsIndian(employee.getIsIndian());
             dsEmployee.setBasicSalary(employee.getBasicSalary());
@@ -348,7 +348,7 @@ public class EmployeeManager implements EmployeeManagerInterface
             designation.setCode(dsEmployee.getDesignation().getCode());
             designation.setTitle(dsEmployee.getDesignation().getTitle());
             employee.setDesignation(designation);
-            employee.setDateOfBirth(dsEmployee.getDateOfBirth());
+            employee.setDateOfBirth((Date)dsEmployee.getDateOfBirth().clone());
             employee.setGender(dsEmployee.getGender()=='M' || dsEmployee.getGender()=='m'?GENDER.MALE:GENDER.FEMALE);
             employee.setBasicSalary(dsEmployee.getBasicSalary());
             employee.setIsIndian(dsEmployee.getIsIndian());
@@ -389,7 +389,7 @@ public class EmployeeManager implements EmployeeManagerInterface
         designation.setCode(dsEmployee.getDesignation().getCode());
         designation.setTitle(dsEmployee.getDesignation().getTitle());
         employee.setDesignation(designation);
-        employee.setDateOfBirth(dsEmployee.getDateOfBirth());
+        employee.setDateOfBirth((Date)dsEmployee.getDateOfBirth().clone());
         employee.setGender(dsEmployee.getGender()=='M' || dsEmployee.getGender()=='m'?GENDER.MALE:GENDER.FEMALE);
         employee.setBasicSalary(dsEmployee.getBasicSalary());
         employee.setIsIndian(dsEmployee.getIsIndian());
@@ -417,7 +417,7 @@ public class EmployeeManager implements EmployeeManagerInterface
         designation.setCode(dsEmployee.getDesignation().getCode());
         designation.setTitle(dsEmployee.getDesignation().getTitle());
         employee.setDesignation(designation);
-        employee.setDateOfBirth(dsEmployee.getDateOfBirth());
+        employee.setDateOfBirth((Date)dsEmployee.getDateOfBirth().clone());
         employee.setGender(dsEmployee.getGender()=='M' || dsEmployee.getGender()=='m'?GENDER.MALE:GENDER.FEMALE);
         employee.setBasicSalary(dsEmployee.getBasicSalary());
         employee.setIsIndian(dsEmployee.getIsIndian());
@@ -445,7 +445,7 @@ public class EmployeeManager implements EmployeeManagerInterface
         designation.setCode(dsEmployee.getDesignation().getCode());
         designation.setTitle(dsEmployee.getDesignation().getTitle());
         employee.setDesignation(designation);
-        employee.setDateOfBirth(dsEmployee.getDateOfBirth());
+        employee.setDateOfBirth((Date)dsEmployee.getDateOfBirth().clone());
         employee.setGender(dsEmployee.getGender()=='M' || dsEmployee.getGender()=='m'?GENDER.MALE:GENDER.FEMALE);
         employee.setBasicSalary(dsEmployee.getBasicSalary());
         employee.setIsIndian(dsEmployee.getIsIndian());
