@@ -32,7 +32,7 @@ String panNumber=gg[6];
 String aadharCardNumber=gg[7];
 */
 
-String name="kamala";
+String name="kamalesh";
 DesignationInterface designation=new Designation();
 designation.setCode(11);
 SimpleDateFormat sdf=new SimpleDateFormat("dd/MM/yyyy");
@@ -45,8 +45,8 @@ Boolean isIndian=true;
 
 BigDecimal basicSalary=new BigDecimal("999999");
 
-String panNumber="pan12454839";
-String aadharCardNumber="inr73232458492";
+String panNumber="pan1234549";
+String aadharCardNumber="inr732322";
 
 try
 {
@@ -57,8 +57,8 @@ try
 //date=sdf.parse(dateOfBirth);
 
 EmployeeInterface employee=new Employee();
-date=sdf.parse("1/3/1997");
-employee.setEmployeeId("A10000005");
+date=sdf.parse("1/3/2020");
+employee.setEmployeeId("A10000008");
 employee.setName(name);
 employee.setDesignation(designation);
 
@@ -74,7 +74,7 @@ EmployeeManagerInterface employeeManager=EmployeeManager.getEmployeeManager();
 
 employeeManager.update(employee);
 
-System.out.println("employee added");
+System.out.println("employee updated");
 
 }
 catch(BLException ble)

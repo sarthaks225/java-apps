@@ -24,6 +24,7 @@ public class EmployeeManager implements EmployeeManagerInterface
     private Map<String,EmployeeInterface> employeePANNumberWiseEmployeesMap;
     private Map<String,EmployeeInterface> employeeAadharCardNumberWiseEmployeesMap;
     private Set<EmployeeInterface> employeesSet;
+    private Map<Integer,Set<EmployeeInterface>> designationCodeWiseEmployeeMap;
 
     private static EmployeeManagerInterface employeeManager=null;
 
@@ -33,6 +34,7 @@ public class EmployeeManager implements EmployeeManagerInterface
         employeePANNumberWiseEmployeesMap=new HashMap<>();
         employeeAadharCardNumberWiseEmployeesMap=new HashMap<>();
         employeesSet=new TreeSet<>();
+        designationCodeWiseEmployeeMap=new HashMap<>();
         populateDataStructure();
     }
 
@@ -51,7 +53,8 @@ public class EmployeeManager implements EmployeeManagerInterface
             EmployeeInterface employee;
 
             DesignationManagerInterface designationManager=DesignationManager.getDesignationManager();
-
+            //Map<Integer,Set<EmployeeInterface>> codeWiseMap;
+            Set<EmployeeInterface> designationWiseEmployeesSet;
             for(EmployeeDTOInterface employeeDTO: employees)
             {
                 employee=new Employee();
@@ -69,6 +72,18 @@ public class EmployeeManager implements EmployeeManagerInterface
                 this.employeePANNumberWiseEmployeesMap.put(employee.getPANNumber().toUpperCase(),employee);
                 this.employeeAadharCardNumberWiseEmployeesMap.put(employee.getAadharCardNumber().toUpperCase(),employee);
                 this.employeesSet.add(employee);
+                designationWiseEmployeesSet=this.designationCodeWiseEmployeeMap.get(employeeDTO.getDesignationCode());
+                if(designationWiseEmployeesSet==null)
+                {
+                    designationWiseEmployeesSet=new TreeSet<>();
+                    designationWiseEmployeesSet.add(employee);
+                    this.designationCodeWiseEmployeeMap.put(employeeDTO.getDesignationCode(),designationWiseEmployeesSet);
+                }
+                else
+                {
+                    designationWiseEmployeesSet.add(employee);
+                }
+
             }
         }catch(DAOException daoe)
         {
@@ -161,12 +176,24 @@ public class EmployeeManager implements EmployeeManagerInterface
             dsEmployee.setAadharCardNumber(employee.getAadharCardNumber());
                 // cloning done....
 
-                // upadatin data structure
+                // upadating data structure
             this.employeeIdWiseEmployeesMap.put(dsEmployee.getEmployeeId().toUpperCase(),dsEmployee);
             this.employeePANNumberWiseEmployeesMap.put(dsEmployee.getPANNumber().toUpperCase(),dsEmployee);
             this.employeeAadharCardNumberWiseEmployeesMap.put(dsEmployee.getAadharCardNumber().toUpperCase(),dsEmployee);
             this.employeesSet.add(dsEmployee);
-            
+
+            Set<EmployeeInterface> designationWiseEmployeesSet;
+            designationWiseEmployeesSet=this.designationCodeWiseEmployeeMap.get(employeeDTO.getDesignationCode());
+            if(designationWiseEmployeesSet==null)
+            {
+                designationWiseEmployeesSet=new TreeSet<>();
+                designationWiseEmployeesSet.add(employee);
+                this.designationCodeWiseEmployeeMap.put(employeeDTO.getDesignationCode(),designationWiseEmployeesSet);
+            }
+            else
+            {
+                designationWiseEmployeesSet.add(employee);
+            }   
         }
         catch(DAOException daoe)
         {
@@ -221,7 +248,7 @@ public class EmployeeManager implements EmployeeManagerInterface
         else if(this.employeePANNumberWiseEmployeesMap.containsKey(employee.getPANNumber().toUpperCase()))
         {
             dsEmployee=this.employeePANNumberWiseEmployeesMap.get(employee.getPANNumber().toUpperCase());
-            if(!(dsEmployee.getPANNumber().equalsIgnoreCase(employee.getPANNumber())));
+            if(!(dsEmployee.getPANNumber().equalsIgnoreCase(employee.getPANNumber())))
             {
                 blException.addException("panNumber","pan number("+employee.getPANNumber()+") already exists");
             }
@@ -235,7 +262,7 @@ public class EmployeeManager implements EmployeeManagerInterface
         else if(this.employeeAadharCardNumberWiseEmployeesMap.containsKey(employee.getAadharCardNumber().toUpperCase()))
         {
             dsEmployee=this.employeeAadharCardNumberWiseEmployeesMap.get(employee.getAadharCardNumber().toUpperCase());
-            if(!(dsEmployee.getAadharCardNumber().equalsIgnoreCase(employee.getAadharCardNumber())));
+            if(!(dsEmployee.getAadharCardNumber().equalsIgnoreCase(employee.getAadharCardNumber())))
             {
                 blException.addException("aadharCardNumber","aadhar card number("+employee.getAadharCardNumber()+") already exists");
             }
@@ -270,6 +297,11 @@ public class EmployeeManager implements EmployeeManagerInterface
             this.employeeIdWiseEmployeesMap.remove(dsEmployee.getEmployeeId().toUpperCase());
             this.employeePANNumberWiseEmployeesMap.remove(dsEmployee.getPANNumber().toUpperCase());
             this.employeeAadharCardNumberWiseEmployeesMap.remove(dsEmployee.getAadharCardNumber().toUpperCase());
+
+            Set<EmployeeInterface> designationWiseEmployeesSet;
+            designationWiseEmployeesSet=this.designationCodeWiseEmployeeMap.get(dsEmployee.getDesignation().getCode());
+            designationWiseEmployeesSet.remove(employee);
+          
             
                 // now cloning employee object
             dsEmployee=new Employee();
@@ -294,6 +326,18 @@ public class EmployeeManager implements EmployeeManagerInterface
             this.employeePANNumberWiseEmployeesMap.put(dsEmployee.getPANNumber().toUpperCase(),dsEmployee);
             this.employeeAadharCardNumberWiseEmployeesMap.put(dsEmployee.getAadharCardNumber().toUpperCase(),dsEmployee);
             this.employeesSet.add(dsEmployee);
+
+            designationWiseEmployeesSet=this.designationCodeWiseEmployeeMap.get(employeeDTO.getDesignationCode());
+            if(designationWiseEmployeesSet==null)
+            {
+                designationWiseEmployeesSet=new TreeSet<>();
+                designationWiseEmployeesSet.add(employee);
+                this.designationCodeWiseEmployeeMap.put(employeeDTO.getDesignationCode(),designationWiseEmployeesSet);
+            }
+            else
+            {
+                designationWiseEmployeesSet.add(employee);
+            }   
             
         }
         catch(DAOException daoe)
@@ -325,6 +369,11 @@ public class EmployeeManager implements EmployeeManagerInterface
             this.employeePANNumberWiseEmployeesMap.remove(employee.getPANNumber().toUpperCase());
             this.employeeAadharCardNumberWiseEmployeesMap.remove(employee.getAadharCardNumber().toUpperCase());
             this.employeesSet.remove(employee);
+
+            Set<EmployeeInterface> designationWiseEmployeesSet;
+            designationWiseEmployeesSet=this.designationCodeWiseEmployeeMap.get(employee.getDesignation().getCode());
+            designationWiseEmployeesSet.remove(employee);
+
         }
         catch(DAOException daoe)
         {
@@ -359,17 +408,40 @@ public class EmployeeManager implements EmployeeManagerInterface
         }
         return employees;
    	}
-    public Set<EmployeeInterface> getByDesignation(int designationCode) throws BLException
+    public Set<EmployeeInterface> getByDesignation(int designationCode)
     {
-        BLException blException=new BLException();
-        blException.setGenericException("Yet to implement");
-		throw blException;
+        Set<EmployeeInterface> designationWiseEmployeesSet;
+        designationWiseEmployeesSet=this.designationCodeWiseEmployeeMap.get(designationCode);
+        if(designationWiseEmployeesSet==null) return null;
+
+        Set<EmployeeInterface> newDesignationWiseEmpoyeeSet=new TreeSet<>();
+        EmployeeInterface employee;
+        DesignationInterface designation;
+        for(EmployeeInterface dsEmployee:designationWiseEmployeesSet)
+        {
+            employee=new Employee();
+
+            employee.setEmployeeId(dsEmployee.getEmployeeId());
+            employee.setName(dsEmployee.getName());
+            designation=new Designation();
+            designation.setCode(dsEmployee.getDesignation().getCode());
+            designation.setTitle(dsEmployee.getDesignation().getTitle());
+            employee.setDesignation(designation);
+            employee.setDateOfBirth((Date)dsEmployee.getDateOfBirth().clone());
+            employee.setGender(dsEmployee.getGender()=='M' || dsEmployee.getGender()=='m'?GENDER.MALE:GENDER.FEMALE);
+            employee.setBasicSalary(dsEmployee.getBasicSalary());
+            employee.setIsIndian(dsEmployee.getIsIndian());
+            employee.setPANNumber(dsEmployee.getPANNumber());
+            employee.setAadharCardNumber(dsEmployee.getAadharCardNumber());
+
+            newDesignationWiseEmpoyeeSet.add(employee);
+        }
+
+        return newDesignationWiseEmpoyeeSet;
    	}
-    public boolean isDesignationAlloted(int designationCode) throws BLException
+    public boolean isDesignationAlloted(int designationCode)
     {
-        BLException blException=new BLException();
-        blException.setGenericException("Yet to implement");
-		throw blException;
+        return this.designationCodeWiseEmployeeMap.containsKey(designationCode);
    	}
     public EmployeeInterface getByEmployeeId(String employeeId) throws BLException
     {
@@ -472,11 +544,11 @@ public class EmployeeManager implements EmployeeManagerInterface
     {
         return this.employeeIdWiseEmployeesMap.size();
    	}
-    public int getCountByDesignation(int designationCode) throws BLException
+    public int getCountByDesignation(int designationCode)
     {
-        BLException blException=new BLException();
-        blException.setGenericException("Yet to implement");
-		throw blException;
+        Set<EmployeeInterface> designationWiseEmployeesSet=this.designationCodeWiseEmployeeMap.get(designationCode);
+        if(designationWiseEmployeesSet==null) return 0;
+        return designationWiseEmployeesSet.size();
    	}
      
 
