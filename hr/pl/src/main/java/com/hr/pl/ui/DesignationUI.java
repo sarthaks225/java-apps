@@ -1,9 +1,12 @@
 package com.hr.pl.ui;
 import com.hr.pl.model.*;
+//import com.hr.pl.icons.*;
+import com.hr.pl.*;
 import com.hr.bl.exceptions.*;
 import com.hr.bl.interfaces.pojo.*;
 import com.hr.bl.pojo.*;
 
+import java.io.*;
 import java.util.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -32,7 +35,7 @@ public class DesignationUI extends JFrame
     public DesignationUI()
     {
         super("Designation Manager");
-        Image icon=Toolkit.getDefaultToolkit().getImage("logo_img.jpg");
+        Image icon=Toolkit.getDefaultToolkit().getImage(this.getClass().getResource("/icons/logo_img.jpg"));
         setIconImage(icon);
         initComponents();
         setAppearance();
@@ -51,7 +54,7 @@ public class DesignationUI extends JFrame
         searchLabel=new JLabel("Search");
         searchErrorLabel=new JLabel("");
         searchTextField=new JTextField();
-        clearSearchFieldButton=new JButton(new javax.swing.ImageIcon("close_img.png"));
+        clearSearchFieldButton=new JButton(new ImageIcon(this.getClass().getResource("/icons/close_img.png")));
         designationModel=new DesignationModel();
 
         designationTable=new JTable(designationModel);
@@ -271,15 +274,15 @@ public class DesignationUI extends JFrame
             designationCaptionLabel=new JLabel("Designation");
             designationLabel=new JLabel("");
             textField=new JTextField();
-            clearTextFieldButton=new JButton(new javax.swing.ImageIcon("close_img.png"));
-            addButton=new JButton(new javax.swing.ImageIcon("add_img.png"));
-            editButton=new JButton(new javax.swing.ImageIcon("edit_img.png"));
-            deleteButton=new JButton(new javax.swing.ImageIcon("delete_img.png"));
-            cancelButton=new JButton(new javax.swing.ImageIcon("cancel_img.png"));
-            pdfButton=new JButton(new javax.swing.ImageIcon("pdf_img.png"));
+            clearTextFieldButton=new JButton(new ImageIcon(DesignationUI.this.getClass().getResource("/icons/close_img.png")));
+            addButton=new JButton(new javax.swing.ImageIcon(DesignationUI.this.getClass().getResource("/icons/add_img.png")));
+            editButton=new JButton(new javax.swing.ImageIcon(DesignationUI.this.getClass().getResource("/icons/edit_img.png")));
+            deleteButton=new JButton(new javax.swing.ImageIcon(DesignationUI.this.getClass().getResource("/icons/delete_img.png")));
+            cancelButton=new JButton(new javax.swing.ImageIcon(DesignationUI.this.getClass().getResource("/icons/cancel_img.png")));
+            pdfButton=new JButton(new javax.swing.ImageIcon(DesignationUI.this.getClass().getResource("/icons/pdf_img.png")));
 
-            saveButton=new JButton(new javax.swing.ImageIcon("save_update_img.png"));
-            updateButton=new JButton(new javax.swing.ImageIcon("save_update_img.png"));
+            saveButton=new JButton(new javax.swing.ImageIcon(DesignationUI.this.getClass().getResource("/icons/save_update_img.png")));
+            updateButton=new JButton(new javax.swing.ImageIcon(DesignationUI.this.getClass().getResource("/icons/save_update_img.png")));
 
             designation=null;
             
@@ -308,7 +311,7 @@ public class DesignationUI extends JFrame
             textField.setBounds(lm+10+120,tm+10+2+30,270,30);
             add(textField);
             
-            clearTextFieldButton.setBounds(lm+10+120+270,tm+10+2+30,50,30); // done done
+            clearTextFieldButton.setBounds(lm+10+120+270,tm+10+2+30,50,30);
             add(clearTextFieldButton);
 
             addButton.setBounds(lm+45,tm+10+40+20+20,70,70);
@@ -516,6 +519,90 @@ public class DesignationUI extends JFrame
                 }
             });
 
+            
+            pdfButton.addActionListener(new ActionListener(){
+
+                public void actionPerformed(ActionEvent ae)
+                {
+                    JFileChooser fileChooser=new JFileChooser();
+                    fileChooser.addChoosableFileFilter(new javax.swing.filechooser.FileFilter(){
+                        public boolean accept(java.io.File file)
+                        {
+                            String fileName;
+                            fileName=file.getName();
+                            if(file.isDirectory()) return true;
+                            else if(fileName.endsWith(".pdf")) return true;
+                            return false;
+                        }
+                        public  java.lang.String getDescription()
+                        {
+                            return "pdf documents (*.pdf)";
+                        }
+                    });
+                    fileChooser.setAcceptAllFileFilterUsed(false);
+                    fileChooser.setCurrentDirectory(new File("."));
+                     // done done 
+                    int selectedOption=fileChooser.showSaveDialog(DesignationUI.this);
+                    
+                    if(selectedOption==JFileChooser.APPROVE_OPTION)
+                    {
+                        try
+                        {
+                            File selectedFile=fileChooser.getSelectedFile();
+                    
+                            String pdfFile=selectedFile.getAbsolutePath();
+                            if(pdfFile.endsWith(".")) pdfFile+="pdf";
+                            else if(pdfFile.endsWith(".pdf")==false) pdfFile+=".pdf";
+
+                            File file=new File(pdfFile);
+                            File parent=new File(file.getParent());
+                            if(parent.exists()==false || parent.isDirectory()==false)
+                            {
+                                JOptionPane.showMessageDialog(DesignationUI.this,"path does not exists: "+file.getParent(),"Message",JOptionPane.INFORMATION_MESSAGE);
+                            }
+                            else
+                            {
+
+                                createPDF(file);
+                            }
+
+                        }catch(BLException e)
+                        {
+                            JOptionPane.showMessageDialog(DesignationUI.this,e.getMessage(),"Message",JOptionPane.INFORMATION_MESSAGE);
+                        }
+
+                    }
+
+
+                }
+
+                public void createPDF(File file) throws BLException
+                {
+                    int checkResult,choice;
+                    try
+                    {
+                    checkResult=designationModel.exportToPDF(file);
+                    if(checkResult==DesignationModel.FILE_ALREADY_EXISTS)
+                    {
+                        choice=JOptionPane.showConfirmDialog(DesignationUI.this,"Do you want to replace with old pdf with new one?","File already exists",JOptionPane.YES_NO_OPTION);
+                        if(choice==JOptionPane.YES_OPTION)
+                        {
+                            file.delete();
+                            createPDF(file);
+                        }
+                        else return;
+                    }
+
+                    }catch(BLException e)
+                    {
+                        throw e;
+                    }
+                }
+
+
+
+            });
+
         }
 
         public void setDesignation(DesignationInterface designation)
@@ -557,6 +644,7 @@ public class DesignationUI extends JFrame
             updateButton.setVisible(false);
             clearTextFieldButton.setVisible(false);
             
+            designationLabel.setVisible(true);
             designationLabel.setText("");
             textField.setText("");
             textField.setVisible(false);

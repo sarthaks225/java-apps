@@ -1,4 +1,4 @@
 apply plugin: 'java'
 dependencies {
-compile files('../dl/dist/hr-dl-1.0.jar','../common/dist/hr-common.jar')
+compile files('../dl/dist/hr-dl-1.0.jar','../common/dist/hr-common.jar','../bl/build/dist/hr-bl-1.0.jar')
 }
