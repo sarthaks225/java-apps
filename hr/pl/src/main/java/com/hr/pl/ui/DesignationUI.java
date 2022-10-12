@@ -388,7 +388,8 @@ public class DesignationUI extends JFrame
                     }
                     catch(BLException ble)
                     {
-                        searchErrorLabel.setText("("+designationLabel.getText()+") can not remove");
+                        JOptionPane.showMessageDialog(DesignationUI.this,ble.getGenericException(),"Message", JOptionPane.INFORMATION_MESSAGE);
+                        //searchErrorLabel.setText(ble.getGenericException());//"("+designationLabel.getText()+") can not remove");
                         return;
                     }
 

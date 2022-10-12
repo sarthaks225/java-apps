@@ -24,7 +24,6 @@ public void add(DesignationDTOInterface designationDTO) throws DAOException
         PreparedStatement preparedStatement=c.prepareStatement("select code from designation where title=?");
         preparedStatement.setString(1,title);
         ResultSet r=preparedStatement.executeQuery();
-        System.out.println("*************");
         if(r.next()==true)
         {
             r.close();
@@ -86,7 +85,6 @@ public void update(DesignationDTOInterface designationDTO) throws DAOException
        
         if(r.next())
         {
-            System.out.println("update debug 1111");
             r.close();
             preparedStatement.close();
             c.close();
@@ -105,37 +103,47 @@ public void update(DesignationDTOInterface designationDTO) throws DAOException
         c.close();
     }catch(Exception e)
     {
-        System.out.println(e.getMessage());
         throw new DAOException(e.getMessage());
     }
 }
 public void delete(int code) throws DAOException
 {
-    System.out.println("*****delete invoked");
 
     if(code<=0)  throw new DAOException("invalid Designation code: "+code);
     try
     {
-        System.out.println("*****delete debug 11111111");
 
         Connection c=ConnectionDAO.getConnection();
         PreparedStatement preparedStatement;
         ResultSet r;
-        preparedStatement=c.prepareStatement("select code from designation where code=?");
+        preparedStatement=c.prepareStatement("select title from designation where code=?");
         preparedStatement.setString(1,Integer.toString(code));
         r=preparedStatement.executeQuery();
 
         if(r.next()==false)
         {
-            System.out.println("***** delete ****");
             r.close();
             preparedStatement.close();
             c.close();
             throw new DAOException("Code ("+code+") does not exists");
         }
-        System.out.println("*****delete debug 2222222222");
+        String designationTitle=r.getString("title");
         r.close();
         preparedStatement.close();
+
+        preparedStatement=c.prepareStatement("select employee_id from employee where designation_code=?");
+        preparedStatement.setInt(1,code);
+        r=preparedStatement.executeQuery();
+        if(r.next())
+        {
+            r.close();
+            preparedStatement.close();
+            c.close();
+            throw new DAOException("Can not remove Designation ("+designationTitle+"),it is alloted to an employee ");
+        }
+        r.close();
+        preparedStatement.close();
+
         preparedStatement=c.prepareStatement("delete from designation title where code=?");
         preparedStatement.setString(1, Integer.toString(code));
         preparedStatement.executeUpdate();
@@ -144,7 +152,6 @@ public void delete(int code) throws DAOException
         
     }catch(Exception e)
     {
-        System.out.println(e.getMessage());
      
         throw new DAOException(e.getMessage());
 
@@ -169,12 +176,10 @@ public Set<DesignationDTOInterface> getAll() throws DAOException
             designationDTO.setCode(r.getInt("code"));
             designationDTO.setTitle(r.getString("title").trim());
             designations.add(designationDTO);
-            System.out.println("code: "+designationDTO.getCode()+"title: "+designationDTO.getTitle());
         }
         r.close();
         statement.close();
         c.close();
-        System.out.println("db_dl getAll");
         return designations;
     }catch(SQLException e)
     {
@@ -282,7 +287,7 @@ public boolean codeExists(int code) throws DAOException
     {  
         Connection c=ConnectionDAO.getConnection();
 
-        PreparedStatement preparedStatement=c.prepareStatement("select code from designation code=?");
+        PreparedStatement preparedStatement=c.prepareStatement("select code from designation where code=?");
         ResultSet r;
         preparedStatement.setString(1,Integer.toString(code));
         r=preparedStatement.executeQuery();
@@ -293,6 +298,10 @@ public boolean codeExists(int code) throws DAOException
             c.close();
             return false;
         }
+        r.close();
+        preparedStatement.close();
+        c.close();
+
         return true;
     }catch(Exception e)
     {
