@@ -1,0 +1,4 @@
+apply plugin: 'java'
+dependencies {
+compile files('C:/gitFolder/java-apps/hr/netcommon/build/libs/netcommon.jar')
+}
